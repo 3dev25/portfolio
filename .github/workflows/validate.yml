@@ -1,0 +1,33 @@
+name: Validate portfolio projects
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  react-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [orbit-crm, smena, kvadrat]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ${{ matrix.project }}/package.json
+      - name: Install dependencies
+        working-directory: ${{ matrix.project }}
+        run: npm install
+      - name: Build React app
+        working-directory: ${{ matrix.project }}
+        run: npm run build
+  php-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - name: Check PHP syntax
+        run: find sever-stroy forma-dent mesto nord-home pravo -name '*.php' -print0 | xargs -0 -n1 php -l
